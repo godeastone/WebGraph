@@ -240,7 +240,7 @@ def pipeline(graph_file: Path, ldb_file: Path, features_file: Path, filterlist_d
     number_failures = 0
 
     # setup and load files
-    fs.download_lists(filterlist_dir, overwrite)
+    # fs.download_lists(filterlist_dir, overwrite)
     filterlists, filterlist_rules = fs.create_filterlist_rules(filterlist_dir)
     config_info = load_config_info(features_file)
 

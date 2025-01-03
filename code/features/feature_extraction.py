@@ -84,10 +84,17 @@ def extract_graph_features(df_graph, G, vid, ldb, feature_config):
     selected_features = feature_config['features_to_extract']
     if 'dataflow' in selected_features:
         dict_redirect, G_indirect, G_indirect_all, df_indirect_graph = pre_extraction(G, df_graph)
-
+    
+    # df_graph.to_csv('/home/shine/PoisoningAttack/perturb_html/a.csv', index=False)
+    
     for node in nodes:
+        
         #Currently, we filter out Element and Storage nodes since we only want to classify URLs (the other nodes are used for feature calculation for these nodes though)
-        if ("type" in node[1]) and (node[1]["type"] != "Element") and (node[1]['attr'] != "inline") and (node[1]["type"] != "Storage"):
+        # if ("type" in node[1]) and (node[1]["type"] != "Element") and (node[1]['attr'] != "inline") and (node[1]["type"] != "Storage"):
+        if ("type" in node[1]) and (node[1]["type"] != "Element") and (node[1]["type"] != "Storage"):
+        # if ("type" in node[1]) and (node[1]["type"] != "Element") and (node[1]['attr'] != "inline") and (node[1]["type"] != "Storage") and (node[1]["type"] != "Script") and (node[1]["type"] != "Document"):
+            # if node[1]["type"] != "Request":
+            #     print("@@" + node[1]["type"])
             df_feature = extract_graph_node_features(
                 G,
                 df_graph,
@@ -101,5 +108,4 @@ def extract_graph_features(df_graph, G, vid, ldb, feature_config):
                 vid
             )
             df_features = pd.concat([df_features, df_feature])
-    
     return df_features

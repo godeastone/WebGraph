@@ -18,6 +18,7 @@ from features.feature_extraction import extract_graph_features
 
 from utils import return_none_if_fail
 from logger import LOGGER
+from multiprocessing import Pool, Process
 
 pd.set_option("display.max_rows", None, "display.max_columns", None)
 
@@ -231,7 +232,7 @@ def validate_config(config_info: Dict[str, Any], mode: str) -> None:
             raise Exception("Error: 'dataflow' must not be used in 'adgraph' mode, please remove it from 'features_to_extract'.")
 
 
-def pipeline(db_file: Path, ldb_file: Path, features_file: Path, filterlist_dir: Path, output_dir: Path, mode: str, overwrite=True):
+def pipeline(db_file: Path, ldb_file: Path, features_file: Path, filterlist_dir: Path, output_dir: Path, mode: str, overwrite=False):
 
     """ Graph processing and labeling pipeline
     :param db_file: the graph data (nodes and edges) in pandas df.
@@ -242,11 +243,13 @@ def pipeline(db_file: Path, ldb_file: Path, features_file: Path, filterlist_dir:
     :param mode: computation mode
     :param overwrite: set True to overwrite the content of the output directory.
     """
-
+    print("@@")
+    print(mode)
+    
     number_failures = 0
 
     # setup and load files
-    fs.download_lists(filterlist_dir, overwrite)
+    # fs.download_lists(filterlist_dir, overwrite)
     filterlists, filterlist_rules = fs.create_filterlist_rules(filterlist_dir)
     config_info = load_config_info(features_file)
 
@@ -292,53 +295,22 @@ def pipeline(db_file: Path, ldb_file: Path, features_file: Path, filterlist_dir:
     LOGGER.info(f"Fail: {number_failures}, Total: {len(sites_visits)}, Percentage:{percent} %s", str(db_file))
 
 
-def main(program: str, args: List[str]):
 
-    parser = argparse.ArgumentParser(prog=program, description="Run a classification pipeline.")
-    parser.add_argument(
-        "--input-db",
-        type=Path,
-        help="Input SQLite database.",
-        default=Path("crawl-data.sqlite")
-    )
-    parser.add_argument(
-        "--ldb",
-        type=str,
-        help="Input LDB.",
-        default="content.ldb"
-    )
-    parser.add_argument(
-        "--features",
-        type=Path,
-        help="Features.",
-        default=Path("features.yaml")
-    )
-    parser.add_argument(
-        "--filters",
-        type=Path,
-        help="Filters directory.",
-        default=Path("filterlists")
-    )
-    parser.add_argument(
-        "--out",
-        type=Path,
-        help="Directory to output the results.",
-        default=Path("out")
-    )
+NUM_CORE = 16
+processes = []
 
-    parser.add_argument(
-        "--mode",
-        choices=["webgraph", "adgraph"],
-        help="Computation mode",
-        default="webgraph"
-    )
+for idx in range(NUM_CORE):
+    
+    input_db = Path("/home/shine/OpenWPM/datadir_proxy/crawl_dir/crawl-data_{}.sqlite".format(idx))
+    ldb = "/home/shine/OpenWPM/datadir_proxy/content_dir/content_{}.ldb".format(idx)
+    features = Path("/data4/shine/WebGraph/code/features.yaml")
+    filters = Path("/data4/shine/a4_pipeline/ad_Nbackdoor/rendering_stream/filterlists_webgraph")
+    out = Path("/data4/shine/WebGraph/reult/result_{}".format(idx))
+    mode = "webgraph"
+    
+    p = Process(target=pipeline, args=(input_db, ldb, features, filters, out, mode,))
+    p.start()
+    processes.append(p)
 
-
-    ns= parser.parse_args(args)
-
-    pipeline(ns.input_db, ns.ldb, ns.features, ns.filters, ns.out, ns.mode, overwrite=False)
-
-
-if __name__ == "__main__":
-    main(sys.argv[0], sys.argv[1:])
-
+for p in processes:
+    p.join()

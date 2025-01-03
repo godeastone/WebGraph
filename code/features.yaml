@@ -13,11 +13,11 @@
 # label_columns provides the name of the columns in the output label file
 
 features_to_extract:
-      #- content
+      - content
       - structure
       - dataflow
       #- additional
-     
+
 graph_columns:
       - visit_id
       - name
@@ -137,6 +137,18 @@ feature_columns:
       - indirect_all_closeness_centrality
       - indirect_all_average_degree_connectivity
       - indirect_all_eccentricity
+      - content_policy_type
+      - url_length
+      - is_subdomain
+      - is_valid_qs
+      - is_third_party
+      - base_domain_in_query 
+      - semicolon_in_query 
+      - screen_size_present 
+      - ad_size_present
+      - ad_size_in_qs_present
+      - keyword_raw_present 
+      - keyword_char_present
 
 label_columns:
       - visit_id

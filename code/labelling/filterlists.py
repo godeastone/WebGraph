@@ -57,6 +57,17 @@ def download_lists(filterlist_dir: Path, overwrite: bool = False):
             content = requests.get(url).content
             list_filename.write_bytes(content)
 
+# shine
+def read_rules(rule_file):
+    with open(rule_file) as f:
+        content = f.readlines()
+
+    raw_rules = []
+
+    for line in content:
+        raw_rules.append(line.strip())
+
+    return raw_rules
 
 def create_filterlist_rules(filterlist_dir):
 

@@ -352,7 +352,7 @@ def classify_crossval(df_labelled, result_dir, save_model, pred_probability, int
         vid_list_iter = list(set(vid_list) - set(used_test_ids))
         chosen_test_vid = random.sample(vid_list_iter, num_test_vid)
         used_test_ids += chosen_test_vid
-
+        
         df_train = df_labelled[~df_labelled['visit_id'].isin(chosen_test_vid)]
         df_test = df_labelled[df_labelled['visit_id'].isin(chosen_test_vid)]
 
@@ -402,6 +402,10 @@ def pipeline(feature_file, label_file, result_dir, save_model, pred_probability,
 
     df_labelled = df_features.merge(df_labels[['visit_id', 'name', 'label']], on=['visit_id', 'name'])
     df_labelled = df_labelled[df_labelled['label'] != "Error"]
+    # shine: rwo shuffle
+    df_labelled = df_labelled.sample(frac=1)
+    # shine: 
+    # df_labelled.drop_duplicates(subset=['visit_id', 'name'], keep='first', inplace=True)
 
     results = classify_crossval(df_labelled, result_dir, save_model, pred_probability, interpret)
     report = describe_classif_reports(results, result_dir)
