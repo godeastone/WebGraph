@@ -23,9 +23,7 @@ from multiprocessing import Pool, Process
 pd.set_option("display.max_rows", None, "display.max_columns", None)
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--shell-num', type=int)
 args = parser.parse_args()
-shell = args.shell_num
 
 def load_config_info(filename: str) -> dict:
     """Load features from features.yaml file
