@@ -23,9 +23,7 @@ from multiprocessing import Pool, Process
 pd.set_option("display.max_rows", None, "display.max_columns", None)
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--shell-num', type=int)
 args = parser.parse_args()
-shell = args.shell_num
 
 def load_config_info(filename: str) -> dict:
     """Load features from features.yaml file
@@ -301,11 +299,11 @@ processes = []
 
 for idx in range(NUM_CORE):
     
-    input_db = Path("/yopo-artifact/OpenWPM/datadir_proxy_webgraph_{}/crawl_dir/crawl-data_{}.sqlite".format(shell, idx))
-    ldb = "/yopo-artifact/OpenWPM/datadir_proxy_webgraph_{}/content_dir/content_{}.ldb".format(shell, idx)
+    input_db = Path("/yopo-artifact/OpenWPM/datadir_proxy_webgraph/crawl_dir/crawl-data_{}.sqlite".format(idx))
+    ldb = "/yopo-artifact/OpenWPM/datadir_proxy_webgraph/content_dir/content_{}.ldb".format(idx)
     features = Path("/yopo-artifact/WebGraph/code/features.yaml")
     filters = Path("/yopo-artifact/data/rendering_stream/filterlists_webgraph")
-    out = Path("/yopo-artifact/WebGraph/result_webgraph_{}/result_{}".format(shell, idx))
+    out = Path("/yopo-artifact/WebGraph/result_webgraph/result_{}".format(idx))
     mode = "webgraph"
     
     p = Process(target=pipeline, args=(input_db, ldb, features, filters, out, mode,))
