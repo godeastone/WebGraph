@@ -5,13 +5,11 @@ import os
 import pandas as pd
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--shell-num', type=int)
 args = parser.parse_args()
-shell = args.shell_num
 
 def merging():
     # Define the directory path where the result_i directories are located
-    directory_path = "/yopo-artifact/WebGraph/result_webgraph_{}".format(shell)
+    directory_path = "/yopo-artifact/WebGraph/result_webgraph"
 
     # Initialize empty DataFrames for each type
     merged_features = pd.DataFrame()
@@ -38,13 +36,13 @@ def merging():
         merged_labelled = pd.concat([merged_labelled, labelled_df])
 
     # Save the merged DataFrames to new CSV files
-    merged_features.to_csv("/yopo-artifact/WebGraph/result_webgraph_{}/merged_features.csv".format(shell), index=False)
-    merged_graph.to_csv("/yopo-artifact/WebGraph/result_webgraph_{}/merged_graph.csv".format(shell), index=False)
-    merged_labelled.to_csv("/yopo-artifact/WebGraph/result_webgraph_{}/merged_labelled.csv".format(shell), index=False)
+    merged_features.to_csv("/yopo-artifact/WebGraph/result_webgraph/merged_features.csv", index=False)
+    merged_graph.to_csv("/yopo-artifact/WebGraph/result_webgraph/merged_graph.csv", index=False)
+    merged_labelled.to_csv("/yopo-artifact/WebGraph/result_webgraph/merged_labelled.csv", index=False)
 
 def add_label():
-    df_a = pd.read_csv('/yopo-artifact/WebGraph/result_webgraph_{}/merged_features.csv'.format(shell))
-    df_b = pd.read_csv('/yopo-artifact/WebGraph/result_webgraph_{}/merged_labelled.csv'.format(shell))
+    df_a = pd.read_csv('/yopo-artifact/WebGraph/result_webgraph/merged_features.csv')
+    df_b = pd.read_csv('/yopo-artifact/WebGraph/result_webgraph/merged_labelled.csv')
 
     # Merge the two dataframes on 'visit_id' and 'name'
     df_c = pd.merge(df_a, df_b[['name', 'label', 'top_level_url']], on=['name'], how='left').drop_duplicates(subset='name', keep='first')
@@ -62,11 +60,11 @@ def add_label():
     df_c.rename(columns={'label': 'CLASS'}, inplace=True)
     
     # Save the merged dataframe to a new CSV file c.csv
-    df_c.to_csv('/yopo-artifact/WebGraph/result_webgraph_{}/merged_features_with_labelled.csv'.format(shell), index=False)
+    df_c.to_csv('/yopo-artifact/WebGraph/result_webgraph/merged_features_with_labelled.csv', index=False)
 
 def add_label_unmod():
-    df_a = pd.read_csv('/yopo-artifact/WebGraph/result/merged_features.csv'.format(shell))
-    df_b = pd.read_csv('/yopo-artifact/WebGraph/result/merged_labelled.csv'.format(shell))
+    df_a = pd.read_csv('/yopo-artifact/WebGraph/result/merged_features.csv')
+    df_b = pd.read_csv('/yopo-artifact/WebGraph/result/merged_labelled.csv')
 
     # Merge the two dataframes on 'visit_id' and 'name'
     df_c = pd.merge(df_a, df_b[['name', 'label', 'top_level_url']], on=['name'], how='left').drop_duplicates(subset='name', keep='first')
@@ -84,7 +82,7 @@ def add_label_unmod():
     df_c.rename(columns={'label': 'CLASS'}, inplace=True)
     
     # Save the merged dataframe to a new CSV file c.csv
-    df_c.to_csv('/yopo-artifact/WebGraph/result/merged_features_with_labelled.csv'.format(shell), index=False)
+    df_c.to_csv('/yopo-artifact/WebGraph/result/merged_features_with_labelled.csv', index=False)
 
 merging()
 add_label()
